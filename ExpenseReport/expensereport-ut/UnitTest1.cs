@@ -54,5 +54,34 @@ namespace Tests
             Assert.That(printedLines[2], Is.EqualTo($"Meal expenses: {(type == ExpenseType.CAR_RENTAL ? 0 : amount)}"));
             Assert.That(printedLines[3], Is.EqualTo($"Total expenses: {amount}"));
         }
+
+        [Test]
+        [TestCase(100, ExpenseType.BREAKFAST, 200, ExpenseType.DINNER)]
+        public void MultiItemReport(int amount1, ExpenseType type1, int amount2, ExpenseType type2)
+        {
+            List<Expense> expenses = [new () {amount = amount1, type = type1}, new () {amount = amount2, type = type2}];
+
+            _expenseReport.PrintReport(expenses);
+
+            List<string> printedLines = _expenseReport.PrintedLines;
+
+            Assert.That(printedLines[^1], Is.EqualTo($"Total expenses: {amount1 + amount2}"));
+        }
+
+        [Test]
+        [TestCase(1001, ExpenseType.BREAKFAST, 200, ExpenseType.DINNER)]
+        [TestCase(5001, ExpenseType.DINNER, 200, ExpenseType.BREAKFAST)]
+        public void OverLimitItemReport(int overAmount1, ExpenseType type1, int amount2, ExpenseType type2)
+        {
+            List<Expense> expenses = [new () {amount = overAmount1, type = type1}, new () {amount = amount2, type = type2}];
+
+            _expenseReport.PrintReport(expenses);
+
+            List<string> printedLines = _expenseReport.PrintedLines;
+
+            Assert.That(printedLines[1], Contains.Substring($"\t{overAmount1}\tX"));
+            Assert.That(printedLines[2], Contains.Substring($"\t{amount2}\t "));
+            Assert.That(printedLines[^1], Is.EqualTo($"Total expenses: {overAmount1 + amount2}"));
+        }
     }
 }
