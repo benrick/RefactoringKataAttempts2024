@@ -1,7 +1,6 @@
 using expensereport_csharp;
 using NUnit.Framework;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Tests
 {
@@ -37,12 +36,13 @@ namespace Tests
         }
 
         [Test]
-        [TestCase(100, ExpenseType.BREAKFAST)]
-        [TestCase(200, ExpenseType.DINNER)]
-        [TestCase(300, ExpenseType.CAR_RENTAL)]
-        public void SingleItemReport(int amount, ExpenseType type)
+        [TestCase(100, 1)]
+        [TestCase(200, 0)]
+        [TestCase(300, 2)]
+        public void SingleItemReport(int amount, int typeId)
         {
-            List<Expense> expenses = [new () {amount = amount, type = type}];
+            ExpenseType type = ExpenseType.GetById(typeId);
+            List<Expense> expenses = [new() { amount = amount, type = type }];
 
             _expenseReport.PrintReport(expenses);
 
@@ -51,15 +51,16 @@ namespace Tests
             Assert.That(printedLines.Count, Is.EqualTo(4));
             Assert.That(printedLines[0], Contains.Substring("Expenses"));
             Assert.That(printedLines[1], Contains.Substring($"\t{amount}\t "));
-            Assert.That(printedLines[2], Is.EqualTo($"Meal expenses: {(type == ExpenseType.CAR_RENTAL ? 0 : amount)}"));
+            Assert.That(printedLines[2], Is.EqualTo($"Meal expenses: {(type.IsMeal ? amount : 0)}"));
             Assert.That(printedLines[3], Is.EqualTo($"Total expenses: {amount}"));
         }
 
         [Test]
-        [TestCase(100, ExpenseType.BREAKFAST, 200, ExpenseType.DINNER)]
-        public void MultiItemReport(int amount1, ExpenseType type1, int amount2, ExpenseType type2)
+        [TestCase(100, 200)]
+        public void MultiItemReport(int amount1, int amount2)
         {
-            List<Expense> expenses = [new () {amount = amount1, type = type1}, new () {amount = amount2, type = type2}];
+            List<Expense> expenses = [new() { amount = amount1, type = ExpenseType.Breakfast },
+                new() { amount = amount2, type = ExpenseType.Dinner }];
 
             _expenseReport.PrintReport(expenses);
 
@@ -69,19 +70,23 @@ namespace Tests
         }
 
         [Test]
-        [TestCase(1001, ExpenseType.BREAKFAST, 200, ExpenseType.DINNER)]
-        [TestCase(5001, ExpenseType.DINNER, 200, ExpenseType.BREAKFAST)]
-        public void OverLimitItemReport(int overAmount1, ExpenseType type1, int amount2, ExpenseType type2)
+        public void OverLimitItemReport()
         {
-            List<Expense> expenses = [new () {amount = overAmount1, type = type1}, new () {amount = amount2, type = type2}];
+            List<Expense> expenses = [
+                new() { amount = 1001, type = ExpenseType.Breakfast },
+                new() { amount = 1000, type = ExpenseType.Breakfast },
+                new() { amount = 5001, type = ExpenseType.Dinner },
+                new() { amount = 5000, type = ExpenseType.Dinner }
+            ];
 
             _expenseReport.PrintReport(expenses);
 
             List<string> printedLines = _expenseReport.PrintedLines;
 
-            Assert.That(printedLines[1], Contains.Substring($"\t{overAmount1}\tX"));
-            Assert.That(printedLines[2], Contains.Substring($"\t{amount2}\t "));
-            Assert.That(printedLines[^1], Is.EqualTo($"Total expenses: {overAmount1 + amount2}"));
+            Assert.That(printedLines[1], Contains.Substring($"\t1001\tX"));
+            Assert.That(printedLines[2], Contains.Substring($"\t1000\t "));
+            Assert.That(printedLines[3], Contains.Substring($"\t5001\tX"));
+            Assert.That(printedLines[4], Contains.Substring($"\t5000\t "));
         }
     }
 }

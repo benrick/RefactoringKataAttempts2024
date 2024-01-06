@@ -14,21 +14,21 @@ namespace expensereport_csharp
             int mealExpenses = 0;
 
             Console.WriteLine(Save("Expenses " + DateTime.Now));
-            
+
             foreach (Expense expense in expenses)
             {
-                if (expense.type == ExpenseType.DINNER || expense.type == ExpenseType.BREAKFAST)
+                if (expense.type == ExpenseType.Dinner || expense.type == ExpenseType.Breakfast)
                 {
                     mealExpenses += expense.amount;
                 }
 
                 String mealOverExpensesMarker =
-                    expense.type == ExpenseType.DINNER && expense.amount > 5000 ||
-                    expense.type == ExpenseType.BREAKFAST && expense.amount > 1000
+                    expense.type == ExpenseType.Dinner && expense.amount > 5000 ||
+                    expense.type == ExpenseType.Breakfast && expense.amount > 1000
                         ? "X"
                         : " ";
 
-                Console.WriteLine(Save(expense.Name + "\t" + expense.amount + "\t" + mealOverExpensesMarker));
+                Console.WriteLine(Save(expense.type.Name + "\t" + expense.amount + "\t" + mealOverExpensesMarker));
 
                 total += expense.amount;
             }
