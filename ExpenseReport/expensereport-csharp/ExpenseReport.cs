@@ -17,16 +17,12 @@ namespace expensereport_csharp
 
             foreach (Expense expense in expenses)
             {
-                if (expense.type == ExpenseType.Dinner || expense.type == ExpenseType.Breakfast)
+                if (expense.type.IsMeal)
                 {
                     mealExpenses += expense.amount;
                 }
 
-                String mealOverExpensesMarker =
-                    expense.type == ExpenseType.Dinner && expense.amount > 5000 ||
-                    expense.type == ExpenseType.Breakfast && expense.amount > 1000
-                        ? "X"
-                        : " ";
+                string mealOverExpensesMarker = expense.IsOverLimitMeal ? "X" : " ";
 
                 Console.WriteLine(Save(expense.type.Name + "\t" + expense.amount + "\t" + mealOverExpensesMarker));
 
