@@ -3,17 +3,6 @@ using System.Collections.Generic;
 
 namespace expensereport_csharp
 {
-    public enum ExpenseType
-    {
-        DINNER, BREAKFAST, CAR_RENTAL
-    }
-
-    public class Expense
-    {
-        public ExpenseType type;
-        public int amount;
-    }
-
     public class ExpenseReport
     {
         public List<string> PrintedLines { get; set; }
