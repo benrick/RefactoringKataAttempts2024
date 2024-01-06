@@ -39,6 +39,7 @@ namespace Tests
         [TestCase(100, 1)]
         [TestCase(200, 0)]
         [TestCase(300, 2)]
+        [TestCase(300, 3)]
         public void SingleItemReport(int amount, int typeId)
         {
             ExpenseType type = ExpenseType.GetById(typeId);
@@ -75,6 +76,8 @@ namespace Tests
             List<Expense> expenses = [
                 new() { amount = 1001, type = ExpenseType.Breakfast },
                 new() { amount = 1000, type = ExpenseType.Breakfast },
+                new() { amount = 2001, type = ExpenseType.Lunch },
+                new() { amount = 2000, type = ExpenseType.Lunch },
                 new() { amount = 5001, type = ExpenseType.Dinner },
                 new() { amount = 5000, type = ExpenseType.Dinner }
             ];
@@ -85,8 +88,10 @@ namespace Tests
 
             Assert.That(printedLines[1], Contains.Substring($"\t1001\tX"));
             Assert.That(printedLines[2], Contains.Substring($"\t1000\t "));
-            Assert.That(printedLines[3], Contains.Substring($"\t5001\tX"));
-            Assert.That(printedLines[4], Contains.Substring($"\t5000\t "));
+            Assert.That(printedLines[3], Contains.Substring($"\t2001\tX"));
+            Assert.That(printedLines[4], Contains.Substring($"\t2000\t "));
+            Assert.That(printedLines[5], Contains.Substring($"\t5001\tX"));
+            Assert.That(printedLines[6], Contains.Substring($"\t5000\t "));
         }
     }
 }

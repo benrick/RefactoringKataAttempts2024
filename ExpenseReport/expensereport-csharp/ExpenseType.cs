@@ -20,8 +20,9 @@ public class ExpenseType
     public static ExpenseType Dinner = new(0, "Dinner", true, 5000);
     public static ExpenseType Breakfast = new(1, "Breakfast", true, 1000);
     public static ExpenseType CarRental = new(2, "Car Rental", false);
+    public static ExpenseType Lunch = new(3, "Lunch", true, 2000);
 
-    public static List<ExpenseType> All = [Dinner, Breakfast, CarRental];
+    public static List<ExpenseType> All = [Dinner, Breakfast, CarRental, Lunch];
 
     public static ExpenseType GetById(int id) => All.SingleOrDefault(x => x.Id == id);
 }
