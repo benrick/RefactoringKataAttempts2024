@@ -1,81 +1,99 @@
+using System;
+
 namespace Tennis
 {
     public class TennisGame1 : ITennisGame
     {
-        private int m_score1 = 0;
-        private int m_score2 = 0;
-        private string player1Name;
-        private string player2Name;
+        private int _score1 = 0;
+        private int _score2 = 0;
+        private readonly string _player1Name;
+        private readonly string _player2Name;
 
         public TennisGame1(string player1Name, string player2Name)
         {
-            this.player1Name = player1Name;
-            this.player2Name = player2Name;
+            _player1Name = player1Name;
+            _player2Name = player2Name;
         }
 
         public void WonPoint(string playerName)
         {
-            if (playerName == "player1")
-                m_score1 += 1;
+            if (playerName == _player1Name)
+            {
+                _score1 += 1;
+            }
+            else if (playerName == _player2Name)
+            {
+                _score2 += 1;
+            }
             else
-                m_score2 += 1;
+            {
+                throw new ArgumentOutOfRangeException($"There is no '{playerName}' player.");
+            }
         }
 
         public string GetScore()
         {
-            string score = "";
-            var tempScore = 0;
-            if (m_score1 == m_score2)
+            if (_score1 == _score2)
             {
-                switch (m_score1)
-                {
-                    case 0:
-                        score = "Love-All";
-                        break;
-                    case 1:
-                        score = "Fifteen-All";
-                        break;
-                    case 2:
-                        score = "Thirty-All";
-                        break;
-                    default:
-                        score = "Deuce";
-                        break;
+                return GetTieScore();
+            }
 
-                }
-            }
-            else if (m_score1 >= 4 || m_score2 >= 4)
+            if (_score1 >= 4 || _score2 >= 4)
             {
-                var minusResult = m_score1 - m_score2;
-                if (minusResult == 1) score = "Advantage player1";
-                else if (minusResult == -1) score = "Advantage player2";
-                else if (minusResult >= 2) score = "Win for player1";
-                else score = "Win for player2";
+                return GetLateGameScore();
             }
-            else
+
+            return $"{GetIndividualScoreName(_score1)}-{GetIndividualScoreName(_score2)}";
+        }
+
+        private static string GetIndividualScoreName(int score)
+        {
+            switch (score)
             {
-                for (var i = 1; i < 3; i++)
-                {
-                    if (i == 1) tempScore = m_score1;
-                    else { score += "-"; tempScore = m_score2; }
-                    switch (tempScore)
-                    {
-                        case 0:
-                            score += "Love";
-                            break;
-                        case 1:
-                            score += "Fifteen";
-                            break;
-                        case 2:
-                            score += "Thirty";
-                            break;
-                        case 3:
-                            score += "Forty";
-                            break;
-                    }
-                }
+                case 0:
+                    return "Love";
+                case 1:
+                    return "Fifteen";
+                case 2:
+                    return "Thirty";
+                case 3:
+                    return "Forty";
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
-            return score;
+        }
+
+        private string GetLateGameScore()
+        {
+            var scoreDifference = _score1 - _score2;
+            if (scoreDifference == 1)
+            {
+                return $"Advantage {_player1Name}";
+            }
+            if (scoreDifference == -1)
+            {
+                return $"Advantage {_player2Name}";
+            }
+            if (scoreDifference >= 2)
+            {
+                return $"Win for {_player1Name}";
+            }
+            return $"Win for {_player2Name}";
+        }
+
+        private string GetTieScore()
+        {
+            switch (_score1)
+            {
+                case 0:
+                    return "Love-All";
+                case 1:
+                    return "Fifteen-All";
+                case 2:
+                    return "Thirty-All";
+                default:
+                    return "Deuce";
+            }
         }
     }
 }
